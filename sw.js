@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zt-cache-v1.6';
+const CACHE_NAME = 'zt-cache-v1.7';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
