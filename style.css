@@ -481,6 +481,11 @@ select:focus {
     color: var(--text);
 }
 
+.entry-time-range {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
 .entry-right {
     text-align: right;
     display: flex;

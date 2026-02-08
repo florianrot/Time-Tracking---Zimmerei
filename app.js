@@ -212,7 +212,10 @@ function refreshEntries() {
                     <div class="entry-item ${multiSelectMode ? 'selectable' : ''} ${selectedIds.has(e.id) ? 'selected' : ''}" data-id="${e.id}">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             ${checkbox}
-                            <span class="entry-label">${labelHtml}</span>
+                            <div class="entry-info">
+                                <span class="entry-label">${labelHtml}</span>
+                                <span class="entry-time-range">${e.from} - ${e.to}</span>
+                            </div>
                         </div>
                         <span class="entry-hours">${e.hours.toFixed(2)} h</span>
                     </div>
@@ -743,20 +746,28 @@ function init() {
 
     function setSmartPresets() {
         const now = new Date();
+
+        // "Von": 4h ago, rounded to nearest 15 min
         const fromDate = new Date(now.getTime() - 4 * 60 * 60 * 1000);
-        // Round to nearest 15 mins
-        const mins = fromDate.getMinutes();
-        const roundedMins = Math.round(mins / 15) * 15;
-        fromDate.setMinutes(roundedMins);
+        const fromMins = fromDate.getMinutes();
+        const fromRounded = Math.round(fromMins / 15) * 15;
+        fromDate.setMinutes(fromRounded);
         fromDate.setSeconds(0);
 
+        // "Bis": current time, rounded to nearest 15 min
+        const toMins = now.getMinutes();
+        const toRounded = Math.round(toMins / 15) * 15;
+        const toDate = new Date(now);
+        toDate.setMinutes(toRounded);
+        toDate.setSeconds(0);
+
         if (elFrom) elFrom.value = formatTime(fromDate.getHours(), fromDate.getMinutes());
-        if (elTo) elTo.value = formatTime(now.getHours(), now.getMinutes());
+        if (elTo) elTo.value = formatTime(toDate.getHours(), toDate.getMinutes());
         updateCalc();
     }
 
     if (elDate) elDate.value = todayISO();
-    // setSmartPresets removed as per user request to start with --:--
+    setSmartPresets();
 
     function updateCalc() {
         if (elFrom && elTo && elFrom.value && elTo.value) {
