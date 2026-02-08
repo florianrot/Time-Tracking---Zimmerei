@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zt-cache-v1.4';
+const CACHE_NAME = 'zt-cache-v1.5';
 
 self.addEventListener('install', (event) => {
     self.skipWaiting();
