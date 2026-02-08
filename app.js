@@ -655,6 +655,7 @@ function exportExcel() {
     if (!select) return;
 
     const [year, month] = select.value.split('-').map(Number);
+    const sheetName = `${MONTHS[month]} ${year}`;
     const settings = getSettings();
     const wage = settings.hourlyWage || 0;
 
@@ -675,6 +676,14 @@ function exportExcel() {
 
     // 1. Header
     ws['A1'] = { v: 'Zimmerei', t: 's', s: EXCEL_STYLES.CELL_STYLES.TITLE };
+    ws['E1'] = {
+        v: sheetName,
+        t: 's',
+        s: {
+            font: { sz: 11, bold: true },
+            alignment: { horizontal: 'right' }
+        }
+    };
     ws['!merges'] = EXCEL_STYLES.MERGES;
 
     const headers = EXCEL_STYLES.HEADER_LABELS;
@@ -703,24 +712,22 @@ function exportExcel() {
         ws['B' + r] = { v: parseTime(e.from), t: 'n', z: EXCEL_STYLES.FORMATS.TIME, s: EXCEL_STYLES.CELL_STYLES.DATA_CENTER };
         ws['C' + r] = { v: parseTime(e.to), t: 'n', z: EXCEL_STYLES.FORMATS.TIME, s: EXCEL_STYLES.CELL_STYLES.DATA_CENTER };
         ws['D' + r] = { v: Number(e.hours.toFixed(2)), t: 'n', z: EXCEL_STYLES.FORMATS.HOURS, s: EXCEL_STYLES.CELL_STYLES.DATA_RIGHT };
-        ws['E' + r] = { v: Number(runningTotal.toFixed(2)), t: 'n', z: EXCEL_STYLES.FORMATS.HOURS, s: EXCEL_STYLES.CELL_STYLES.DATA_RIGHT };
-        ws['F' + r] = { v: Number((e.hours * wage).toFixed(2)), t: 'n', z: EXCEL_STYLES.FORMATS.CURRENCY, s: EXCEL_STYLES.CELL_STYLES.DATA_RIGHT };
+        ws['E' + r] = { v: Number((e.hours * wage).toFixed(2)), t: 'n', z: EXCEL_STYLES.FORMATS.CURRENCY, s: EXCEL_STYLES.CELL_STYLES.DATA_RIGHT };
     });
 
-    // 3. Total Row (draw line across all columns A-F)
+    // 3. Total Row (draw line across all columns A-E)
     const lastR = monthEntries.length + 3;
     ws['A' + lastR] = { v: '', t: 's', s: EXCEL_STYLES.CELL_STYLES.TOTAL_EMPTY };
     ws['B' + lastR] = { v: '', t: 's', s: EXCEL_STYLES.CELL_STYLES.TOTAL_EMPTY };
-    ws['C' + lastR] = { v: '', t: 's', s: EXCEL_STYLES.CELL_STYLES.TOTAL_EMPTY };
-    ws['D' + lastR] = { v: 'Total', t: 's', s: EXCEL_STYLES.CELL_STYLES.TOTAL_LABEL };
-    ws['E' + lastR] = { v: Number(runningTotal.toFixed(2)), t: 'n', z: EXCEL_STYLES.FORMATS.HOURS, s: EXCEL_STYLES.CELL_STYLES.TOTAL };
-    ws['F' + lastR] = { v: Number((runningTotal * wage).toFixed(2)), t: 'n', z: EXCEL_STYLES.FORMATS.CURRENCY, s: EXCEL_STYLES.CELL_STYLES.TOTAL };
+    ws['C' + lastR] = { v: 'Total', t: 's', s: EXCEL_STYLES.CELL_STYLES.TOTAL_LABEL };
+    const endRow = lastR - 1;
+    ws['D' + lastR] = { t: 'n', f: `SUM(D3:D${endRow})`, z: EXCEL_STYLES.FORMATS.HOURS, s: EXCEL_STYLES.CELL_STYLES.TOTAL };
+    ws['E' + lastR] = { t: 'n', f: `SUM(E3:E${endRow})`, z: EXCEL_STYLES.FORMATS.CURRENCY, s: EXCEL_STYLES.CELL_STYLES.TOTAL };
 
-    ws['!ref'] = `A1:F${lastR}`;
+    ws['!ref'] = `A1:E${lastR}`;
     ws['!cols'] = EXCEL_STYLES.COLUMN_WIDTHS;
 
     const wb = XLSX.utils.book_new();
-    const sheetName = `${MONTHS[month]} ${year}`;
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
     XLSX.writeFile(wb, `Stunden - ${sheetName}.xlsx`);
 

@@ -3,18 +3,18 @@
  */
 const EXCEL_STYLES = {
     // Column widths in characters
+    // Column widths in characters
     COLUMN_WIDTHS: [
         { wch: 12 }, // Datum
         { wch: 10 }, // Von
         { wch: 10 }, // Bis
         { wch: 10 }, // Stunden
-        { wch: 10 }, // Total
         { wch: 15 }  // Lohn netto
     ],
 
     // Cell merges
     MERGES: [
-        { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } } // Header title merge
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } } // Header title merge (A-D)
     ],
 
     // Number formats
@@ -26,10 +26,10 @@ const EXCEL_STYLES = {
     },
 
     // Header labels
-    HEADER_LABELS: ['Datum', 'Von', 'Bis', 'Stunden', 'Total', 'Lohn netto'],
+    HEADER_LABELS: ['Datum', 'Von', 'Bis', 'Stunden', 'Lohn netto'],
 
     // Column Names
-    COL_NAMES: ['A', 'B', 'C', 'D', 'E', 'F'],
+    COL_NAMES: ['A', 'B', 'C', 'D', 'E'],
 
     // Cell Styles (Requires xlsx-js-style library for these to take effect)
     CELL_STYLES: {
