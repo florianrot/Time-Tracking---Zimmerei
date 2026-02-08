@@ -769,13 +769,24 @@ function init() {
         updateCalc();
     });
 
-    // Pickers
+    // Pickers (Icon + Input click)
     document.getElementById('btn-picker-from')?.addEventListener('click', () => TimePicker.open(elFrom, 'Von'));
+    elFrom?.addEventListener('click', () => TimePicker.open(elFrom, 'Von'));
+
     document.getElementById('btn-picker-to')?.addEventListener('click', () => TimePicker.open(elTo, 'Bis'));
+    elTo?.addEventListener('click', () => TimePicker.open(elTo, 'Bis'));
+
     document.getElementById('btn-edit-picker-from')?.addEventListener('click', () => TimePicker.open(elEditFrom, 'Von'));
+    elEditFrom?.addEventListener('click', () => TimePicker.open(elEditFrom, 'Von'));
+
     document.getElementById('btn-edit-picker-to')?.addEventListener('click', () => TimePicker.open(elEditTo, 'Bis'));
+    elEditTo?.addEventListener('click', () => TimePicker.open(elEditTo, 'Bis'));
+
     document.getElementById('btn-picker-date')?.addEventListener('click', () => DatePicker.open(elDate, 'Datum'));
+    elDate?.addEventListener('click', () => DatePicker.open(elDate, 'Datum'));
+
     document.getElementById('btn-edit-picker-date')?.addEventListener('click', () => DatePicker.open(elEditDate, 'Datum'));
+    elEditDate?.addEventListener('click', () => DatePicker.open(elEditDate, 'Datum'));
 
     // Dashboard
     document.getElementById('btn-show-entries')?.addEventListener('click', () => switchView('view-entries'));
