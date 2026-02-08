@@ -87,7 +87,15 @@ function saveSettings(s) {
 function loadEntries() {
     const local = localStorage.getItem(STORAGE.ENTRIES);
     if (local) {
-        entriesCache = JSON.parse(local);
+        let entries = JSON.parse(local);
+        // HEAL: Fix ISO dates/times that might have leaked from old syncs
+        entries = entries.map(e => ({
+            ...e,
+            date: e.date.includes('T') ? e.date.split('T')[0] : e.date,
+            from: e.from.includes('T') ? e.from.split('T')[1].substr(0, 5) : e.from,
+            to: e.to.includes('T') ? e.to.split('T')[1].substr(0, 5) : e.to
+        }));
+        entriesCache = entries;
         refreshEntries();
     }
 }

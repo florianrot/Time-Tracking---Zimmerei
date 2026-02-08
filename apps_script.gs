@@ -16,15 +16,13 @@ function setup() {
 }
 
 function formatSheet(sheet) {
-  // Clear everything to avoid layout shifts or old data remnants
+  // Clear everything to ensure clean rewrite
   sheet.clear();
-  sheet.getRange("1:100").clearContent().clearFormat();
   
-  // Row 1: Company Header
+  // Header in A1
   sheet.getRange("A1").setValue(COMPANY_NAME).setFontWeight("bold").setFontSize(14);
   
-  // Row 2: Headers
-  // Columns: A=Datum, B=Von, C=Bis, D=Stunden, E=Total, f=Lohn netto, G=ID (System)
+  // Headers in Row 2
   const headers = ["Datum", "Von", "Bis", "Stunden", "Total", "Lohn netto", "ID (System)"];
   sheet.getRange(2, 1, 1, headers.length)
     .setValues([headers])
@@ -32,16 +30,16 @@ function formatSheet(sheet) {
     .setBackground("#f3f3f3")
     .setBorder(true, true, true, true, true, true);
     
-  // Freeze top rows
   sheet.setFrozenRows(2);
   
-  // Set number formats
-  sheet.getRange("D:D").setNumberFormat("0.00");
-  sheet.getRange("E:E").setNumberFormat("0.00");
+  // Format columns
+  sheet.getRange("A:A").setNumberFormat("dd.MM.yyyy"); // Force column A to be date
+  sheet.getRange("B:C").setNumberFormat("HH:mm");       // Force columns B/C to be time
+  sheet.getRange("D:E").setNumberFormat("0.00");
   sheet.getRange("F:F").setNumberFormat("#,##0.00\" CHF\"");
   
-  // Hide technical columns (G=ID, H=Wage, I=Label)
-  sheet.hideColumns(7, 3); 
+  // Hide technical columns
+  sheet.hideColumns(7); 
 }
 
 function doGet(e) {
@@ -58,12 +56,27 @@ function doGet(e) {
         const row = data[i];
         if (!row[0] || row[0] === "Total") continue;
         
+        let dateVal = row[0];
+        let fromVal = row[1];
+        let toVal = row[2];
+
+        // Ensure we send back strings that the app expects (YYYY-MM-DD and HH:mm)
+        if (dateVal instanceof Date) {
+          dateVal = Utilities.formatDate(dateVal, Session.getScriptTimeZone(), "yyyy-MM-dd");
+        }
+        if (fromVal instanceof Date) {
+          fromVal = Utilities.formatDate(fromVal, Session.getScriptTimeZone(), "HH:mm");
+        }
+        if (toVal instanceof Date) {
+          toVal = Utilities.formatDate(toVal, Session.getScriptTimeZone(), "HH:mm");
+        }
+        
         allEntries.push({
-          date: row[0],
-          from: row[1],
-          to: row[2],
-          hours: row[3],
-          id: row[6] || Utilities.getUuid() // ID is now in column G (index 6)
+          date: dateVal,
+          from: fromVal,
+          to: toVal,
+          hours: parseFloat(row[3]) || 0,
+          id: row[6] || Utilities.getUuid()
         });
     }
   });
@@ -74,16 +87,42 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    const payload = JSON.parse(e.postData.contents);
+    let payload;
+    try {
+      payload = JSON.parse(e.postData.contents);
+    } catch (err) {
+      // Fallback for different post body formats
+      payload = JSON.parse(e.postData.contents || "{}");
+    }
+    
     const entries = payload.entries || [];
     const rawWage = payload.hourlyWage || (payload.settings && payload.settings.hourlyWage);
     const wage = parseFloat(rawWage) || 0;
     
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const groups = {};
     
+    // 1. CLEAR ALL MONTHLY SHEETS FIRST (to ensure deletions are reflected)
+    // We only clear sheets that match our Month Year pattern or have our header
+    const sheets = ss.getSheets();
+    sheets.forEach(s => {
+      const name = s.getName();
+      // Check if name is like "Januar 2026"
+      const pts = name.split(" ");
+      if (pts.length === 2 && GERMAN_MONTHS.indexOf(pts[0]) !== -1) {
+        formatSheet(s);
+      }
+    });
+
+    const groups = {};
     entries.forEach(entry => {
-      const d = new Date(entry.date);
+      let d;
+      if (entry.date.includes('.')) {
+        const pts = entry.date.split('.');
+        d = new Date(pts[2], pts[1]-1, pts[0]);
+      } else {
+        d = new Date(entry.date);
+      }
+      
       const key = `${GERMAN_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
       if (!groups[key]) groups[key] = [];
       groups[key].push(entry);
@@ -96,43 +135,36 @@ function doPost(e) {
       if (!sheet) {
         sheet = ss.insertSheet(key);
         formatSheet(sheet);
-      } else {
-        formatSheet(sheet);
       }
+      // Note: formatSheet was already called above for existing month sheets
       
       if (groups[key].length > 0) {
-        // Write wage to diagnostic cells H1/I1 (hidden)
-        sheet.getRange("H1").setValue(wage).setNumberFormat("0.00");
-        sheet.getRange("I1").setValue("CHF/h (Sync)");
+        sheet.getRange("H1").setValue(wage);
+        sheet.hideColumns(8);
 
         const rows = groups[key].map((entry, idx) => {
           const rowIdx = idx + 3;
           const hours = parseFloat(entry.hours) || 0;
-          
           const totalFormula = idx === 0 ? `=D${rowIdx}` : `=E${rowIdx-1}+D${rowIdx}`;
           const wageFormula = idx === 0 ? `=D${rowIdx}*$H$1` : `=F${rowIdx-1}+(D${rowIdx}*$H$1)`;
           
           return [
-            formatDateGerman(entry.date),
+            entry.date,
             entry.from,
             entry.to,
             hours,
             totalFormula, 
             wageFormula,
-            entry.id // ID in column G
+            entry.id
           ];
         });
         
-        // Write data rows
         sheet.getRange(3, 1, rows.length, 7).setValues(rows);
         
-        // Add Summary Row
         const summaryIdx = rows.length + 3;
         sheet.getRange(summaryIdx, 4).setValue("Total").setFontWeight("bold");
         sheet.getRange(summaryIdx, 5).setFormula(`=E${summaryIdx-1}`).setFontWeight("bold");
         sheet.getRange(summaryIdx, 6).setFormula(`=F${summaryIdx-1}`).setFontWeight("bold");
-        
-        // Add thick line above summary
         sheet.getRange(summaryIdx, 1, 1, 6).setBorder(true, null, null, null, null, null, "black", SpreadsheetApp.BorderStyle.SOLID_THICK);
       }
     }
@@ -144,13 +176,4 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
-}
-
-function formatDateGerman(isoStr) {
-  if (isoStr instanceof Date) {
-    return Utilities.formatDate(isoStr, Session.getScriptTimeZone(), "dd.MM.yyyy");
-  }
-  const parts = isoStr.toString().split("-");
-  if (parts.length !== 3) return isoStr;
-  return `${parts[2]}.${parts[1]}.${parts[0]}`;
 }
