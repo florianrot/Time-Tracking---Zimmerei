@@ -831,6 +831,11 @@ function init() {
         syncWrite();
         selectedIds.clear();
         multiSelectMode = false;
+
+        // UI Fix: Ensure the multi-select icon is no longer lit up
+        const btnSelect = document.getElementById('btn-multi-select');
+        if (btnSelect) btnSelect.classList.remove('active');
+
         refreshEntries();
         showToast('Einträge gelöscht');
     });
