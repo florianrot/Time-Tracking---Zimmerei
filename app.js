@@ -756,12 +756,14 @@ function init() {
     }
 
     if (elDate) elDate.value = todayISO();
-    setSmartPresets(); // Initial load presets
+    // setSmartPresets removed as per user request to start with --:--
 
     function updateCalc() {
-        if (elFrom && elTo && elCalc) {
+        if (elFrom && elTo && elFrom.value && elTo.value) {
             const h = calcHours(elFrom.value, elTo.value);
             elCalc.textContent = `${h.toFixed(2)} h`;
+        } else {
+            if (elCalc) elCalc.innerHTML = '&mdash;';
         }
     }
 
@@ -786,11 +788,11 @@ function init() {
         refreshEntries();
 
         showToast('Gespeichert');
-        // Clear fields as requested
+        // Clear fields and reset to native --:--
         elFrom.value = '';
         elTo.value = '';
         elDate.value = todayISO();
-        updateCalc();
+        updateCalc(); // This will now set it back to &mdash;
     });
 
     // Pickers (Icon + Input click)
