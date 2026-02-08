@@ -741,7 +741,23 @@ function init() {
     const elTo = document.getElementById('entry-to');
     const elCalc = document.getElementById('calculated-hours');
 
+    function setSmartPresets() {
+        const now = new Date();
+        const fromDate = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+
+        // Round fromDate to nearest 15 mins
+        const mins = fromDate.getMinutes();
+        const roundedMins = Math.round(mins / 15) * 15;
+        fromDate.setMinutes(roundedMins);
+        fromDate.setSeconds(0);
+
+        if (elFrom) elFrom.value = formatTime(fromDate.getHours(), fromDate.getMinutes());
+        if (elTo) elTo.value = formatTime(now.getHours(), now.getMinutes());
+        updateCalc();
+    }
+
     if (elDate) elDate.value = todayISO();
+    setSmartPresets();
 
     function updateCalc() {
         if (elFrom && elTo && elCalc) {
@@ -774,7 +790,7 @@ function init() {
         elFrom.value = '';
         elTo.value = '';
         elDate.value = todayISO();
-        updateCalc();
+        setSmartPresets(); // Re-apply smart presets for the next entry
     });
 
     // Pickers (Icon + Input click)

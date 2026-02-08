@@ -1,6 +1,6 @@
 # 🛠️ Zeiterfassung Zimmerei – Dokumentation
 
-Diese App ist eine maßgeschneiderte, moderne Lösung zur Erfassung von Arbeitszeiten, speziell entwickelt für die Anforderungen im Handwerk. Sie kombiniert ein intuitives mobiles Erlebnis mit der Stärke von Google Sheets als Datenbank.
+Diese App wurde als **privates Projekt** entwickelt, um die bisherige manuelle Dateneingabe direkt in Google Sheets durch eine effiziente, mobile Lösung zu ersetzen. Gleichzeitig diente dieses Projekt als **Einstieg**, um die Möglichkeiten von KI-basierten Entwicklungswerkzeugen wie **Claude Code, Antigravity und Codex** kennenzulernen.
 
 ## 🌟 Hauptfunktionen
 
@@ -9,7 +9,8 @@ Diese App ist eine maßgeschneiderte, moderne Lösung zur Erfassung von Arbeitsz
 - **Vollbildmodus**: Keine störenden Browser-Leisten – volle Konzentration auf die Zeiterfassung.
 - **Dark Mode**: Ein edles, augenschonendes Design in dunklen Tönen mit klaren Kontrasten.
 
-### 2. Intelligente Zeiterfassung
+### 2. Intelligente Zeiterfassung & Automatisierung
+- **Smart-Presets (Auto-Time)**: Beim Öffnen erkennt die App automatisch das aktuelle Datum. Die **Startzeit** wird intelligent auf **4 Stunden vor der aktuellen Zeit** gesetzt (gerundet auf die nächsten 15 Minuten) und die **Endzeit** auf die **aktuelle Uhrzeit**. Dies ermöglicht einen Eintrag mit nur einem Klick.
 - **Präzisions-Picker**: Eigens entwickelte "Wheel-Picker" für Datum und Uhrzeit, die eine schnelle Auswahl ermöglichen, ohne dass die Bildschirmtastatur stört.
 - **Automatische Berechnung**: Die App berechnet sofort die geleisteten Stunden basierend auf "Von" und "Bis".
 - **Mitternachts-Check**: Automatische Erkennung von Arbeitszeiten, die über Mitternacht hinausgehen.
