@@ -9,8 +9,8 @@ Diese App wurde als **privates Projekt** entwickelt, um die bisherige manuelle D
 - **Vollbildmodus**: Keine störenden Browser-Leisten – volle Konzentration auf die Zeiterfassung.
 - **Dark Mode**: Ein edles, augenschonendes Design in dunklen Tönen mit klaren Kontrasten.
 
-### 2. Intelligente Zeiterfassung & Automatisierung
-- **Smart-Presets (Auto-Time)**: Beim Öffnen erkennt die App automatisch das aktuelle Datum. Die **Startzeit** wird intelligent auf **4 Stunden vor der aktuellen Zeit** gesetzt (gerundet auf die nächsten 15 Minuten) und die **Endzeit** auf die **aktuelle Uhrzeit**. Dies ermöglicht einen Eintrag mit nur einem Klick.
+### 2. Intelligente Zeiterfassung
+- **Automatisches Datum**: Beim Öffnen erkennt die App automatisch das aktuelle Datum. Die Uhrzeit-Felder starten leer (`--:--`), um eine saubere Erfassung zu ermöglichen.
 - **Präzisions-Picker**: Eigens entwickelte "Wheel-Picker" für Datum und Uhrzeit, die eine schnelle Auswahl ermöglichen, ohne dass die Bildschirmtastatur stört.
 - **Automatische Berechnung**: Die App berechnet sofort die geleisteten Stunden basierend auf "Von" und "Bis".
 - **Mitternachts-Check**: Automatische Erkennung von Arbeitszeiten, die über Mitternacht hinausgehen.
