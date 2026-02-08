@@ -744,8 +744,7 @@ function init() {
     function setSmartPresets() {
         const now = new Date();
         const fromDate = new Date(now.getTime() - 4 * 60 * 60 * 1000);
-
-        // Round fromDate to nearest 15 mins
+        // Round to nearest 15 mins
         const mins = fromDate.getMinutes();
         const roundedMins = Math.round(mins / 15) * 15;
         fromDate.setMinutes(roundedMins);
@@ -757,7 +756,7 @@ function init() {
     }
 
     if (elDate) elDate.value = todayISO();
-    setSmartPresets();
+    setSmartPresets(); // Initial load presets
 
     function updateCalc() {
         if (elFrom && elTo && elCalc) {
@@ -787,10 +786,11 @@ function init() {
         refreshEntries();
 
         showToast('Gespeichert');
+        // Clear fields as requested
         elFrom.value = '';
         elTo.value = '';
         elDate.value = todayISO();
-        setSmartPresets(); // Re-apply smart presets for the next entry
+        updateCalc();
     });
 
     // Pickers (Icon + Input click)
