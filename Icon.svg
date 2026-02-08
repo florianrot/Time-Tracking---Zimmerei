@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hintergrund: Abgerundetes Quadrat im App-Stil -->
+  <rect width="512" height="512" rx="110" fill="#0F0F0F"/>
+  
+  <!-- Der Hammer (Stilisiert & Modern) -->
+  <g transform="translate(116, 116) scale(0.55)">
+    <!-- Hammerkopf -->
+    <path d="M100 80C80 80 80 100 80 120V200C80 220 80 240 100 240H180V80H100Z" fill="white"/>
+    <rect x="180" y="40" width="300" height="240" rx="20" fill="white"/>
+    <path d="M480 80H520C540 80 540 100 540 120V200C540 220 540 240 520 240H480V80Z" fill="white"/>
+    
+    <!-- Stiel -->
+    <rect x="290" y="280" width="80" height="380" rx="20" fill="white" fill-opacity="0.8"/>
+    <!-- Griff-Ende -->
+    <rect x="290" y="600" width="80" height="60" rx="10" fill="white"/>
+  </g>
+</svg>
