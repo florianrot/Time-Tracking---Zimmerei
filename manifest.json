@@ -1,0 +1,17 @@
+{
+  "name": "Zeiterfassung Zimmerei",
+  "short_name": "Zeit",
+  "description": "Premium Zeiterfassung für die Zimmerei",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
