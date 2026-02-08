@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f0f0f">
+    <title>Zeiterfassung</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ===== MAIN APP ===== -->
+    <div id="app" class="app">
+
+        <!-- View: Zeit-Eingabe -->
+        <div id="view-entry" class="view active">
+            <header>
+                <h1>Zeit erfassen</h1>
+                <div class="sync-badge" id="sync-badge" title="Sync-Status">
+                    <span class="sync-dot"></span>
+                </div>
+            </header>
+            <main class="view-content">
+                <div class="form-group">
+                    <label for="entry-date">Datum</label>
+                    <div class="input-with-icon">
+                        <input type="date" id="entry-date">
+                        <button class="btn-icon-trigger" id="btn-picker-date" type="button" title="Datum wählen">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                                height="18">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="time-row">
+                    <div class="form-group time-input-group">
+                        <label for="entry-from">Von</label>
+                        <div class="input-with-icon">
+                            <input type="time" id="entry-from">
+                            <button class="btn-icon-trigger" id="btn-picker-from" type="button" title="Uhrzeit wählen">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                                    height="18">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group time-input-group">
+                        <label for="entry-to">Bis</label>
+                        <div class="input-with-icon">
+                            <input type="time" id="entry-to">
+                            <button class="btn-icon-trigger" id="btn-picker-to" type="button" title="Uhrzeit wählen">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                                    height="18">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="calculated-hours" id="calculated-hours">&mdash;</div>
+                <button class="btn-primary" id="btn-save">Speichern</button>
+                <div id="edit-controls" class="edit-controls hidden">
+                    <button class="btn-secondary" id="btn-cancel-edit">Abbrechen</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- View: Dashboard -->
+        <div id="view-dashboard" class="view">
+            <header>
+                <h1>Dashboard</h1>
+            </header>
+            <main class="view-content">
+                <div class="dashboard-card">
+                    <span class="card-label">Stunden diesen Monat</span>
+                    <span class="card-value" id="dash-hours">0.00 h</span>
+                </div>
+                <div class="dashboard-card">
+                    <span class="card-label">Lohn netto</span>
+                    <span class="card-value" id="dash-wage">CHF 0.00</span>
+                </div>
+                <div class="dashboard-actions">
+                    <button class="btn-primary" id="btn-show-entries">Eintr&auml;ge anzeigen</button>
+                    <button class="btn-secondary" id="btn-export-xlsx">Excel exportieren</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- View: Einträge -->
+        <div id="view-entries" class="view">
+            <header>
+                <h1>Eintr&auml;ge</h1>
+                <div class="header-actions">
+                    <button class="header-btn" id="btn-multi-select" title="Mehrfachauswahl">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"
+                            height="20">
+                            <rect x="3" y="5" width="18" height="14" rx="2" />
+                            <path d="M9 12l2 2 4-4" />
+                        </svg>
+                    </button>
+                    <button class="header-btn" id="btn-settings" title="Einstellungen">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"
+                            height="20">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            <main class="view-content">
+                <div class="entries-month-nav">
+                    <button class="month-nav-btn" id="btn-prev-month">&larr;</button>
+                    <span id="entries-month-label">Januar 2026</span>
+                    <button class="month-nav-btn" id="btn-next-month">&rarr;</button>
+                </div>
+                <div id="entries-list" class="entries-list">
+                    <p class="empty-state">Keine Eintr&auml;ge vorhanden</p>
+                </div>
+                <div id="multi-select-bar" class="multi-select-bar hidden">
+                    <span id="multi-select-count">0 ausgewählt</span>
+                    <button class="btn-danger-sm" id="btn-delete-selected">Löschen</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- ===== MODAL: EINSTELLUNGEN ===== -->
+        <div id="modal-settings" class="modal hidden">
+            <div class="modal-backdrop" data-close="modal-settings"></div>
+            <div class="modal-content modal-scrollable">
+                <h2>Einstellungen</h2>
+
+                <div class="settings-section">
+                    <label class="section-label">Allgemein</label>
+                    <div class="form-group">
+                        <label for="setting-wage">Stundenlohn (CHF)</label>
+                        <input type="number" id="setting-wage" min="0" step="0.05" placeholder="z.B. 25.00">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <label class="section-label">Google Sheets Sync</label>
+                    <p class="section-desc">Verbindet die App mit einem Google Sheet. Daten werden automatisch gesynced
+                        zwischen allen Ger&auml;ten.</p>
+                    <div class="form-group">
+                        <label for="setting-script-url">Apps Script URL</label>
+                        <input type="text" id="setting-script-url" placeholder="https://script.google.com/macros/s/...">
+                    </div>
+                    <p class="section-hint">Erstelle ein Google Apps Script in deinem Sheet und kopiere die Web-App URL
+                        hierher.</p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-settings-cancel">Abbrechen</button>
+                    <button class="btn-primary" id="btn-settings-save">Speichern</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: EINTRAG BEARBEITEN ===== -->
+        <div id="modal-edit" class="modal hidden">
+            <div class="modal-backdrop" data-close="modal-edit"></div>
+            <div class="modal-content">
+                <h2>Eintrag bearbeiten</h2>
+                <div class="form-group">
+                    <label for="edit-date">Datum</label>
+                    <div class="input-with-icon">
+                        <input type="date" id="edit-date">
+                        <button class="btn-icon-trigger" id="btn-edit-picker-date" type="button" title="Datum wählen">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                                height="18">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="time-row">
+                    <div class="form-group time-input-group">
+                        <label for="edit-from">Von</label>
+                        <div class="input-with-icon">
+                            <input type="time" id="edit-from">
+                            <button class="btn-icon-trigger" id="btn-edit-picker-from" type="button"
+                                title="Uhrzeit wählen">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                                    height="18">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group time-input-group">
+                        <label for="edit-to">Bis</label>
+                        <div class="input-with-icon">
+                            <input type="time" id="edit-to">
+                            <button class="btn-icon-trigger" id="btn-edit-picker-to" type="button"
+                                title="Uhrzeit wählen">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                                    height="18">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="calculated-hours" id="edit-calc">&mdash;</div>
+                <div class="modal-actions modal-actions-3">
+                    <button class="btn-danger-sm" id="btn-edit-delete">Löschen</button>
+                    <button class="btn-secondary" id="btn-edit-cancel">Abbrechen</button>
+                    <button class="btn-primary" id="btn-edit-save">Aktualisieren</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: TIME PICKER ===== -->
+        <div id="modal-time-picker" class="modal hidden">
+            <div class="modal-backdrop" data-close="modal-time-picker"></div>
+            <div class="modal-content time-picker-content">
+                <div class="picker-header">
+                    <h2 id="time-picker-title">Zeit wählen</h2>
+                </div>
+                <div class="wheel-container">
+                    <div class="wheel-overlay"></div>
+                    <div class="wheel" id="wheel-hours">
+                        <!-- Hours 00-23 generated by JS -->
+                    </div>
+                    <div class="wheel-separator">:</div>
+                    <div class="wheel" id="wheel-minutes">
+                        <!-- Minutes 00-59 generated by JS -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" data-close="modal-time-picker">Abbrechen</button>
+                    <button class="btn-primary" id="btn-time-set">Fertig</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: EXPORT MONAT WÄHLEN ===== -->
+        <div id="modal-export-selection" class="modal hidden">
+            <div class="modal-backdrop" data-close="modal-export-selection"></div>
+            <div class="modal-content">
+                <h2>Monat exportieren</h2>
+                <div class="form-group">
+                    <label for="export-month-select">Monat wählen</label>
+                    <select id="export-month-select" class="form-select">
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="btn-export-cancel">Abbrechen</button>
+                    <button class="btn-primary" id="btn-export-confirm">Exportieren</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MODAL: DATE PICKER ===== -->
+        <div id="modal-date-picker" class="modal hidden">
+            <div class="modal-backdrop" data-close="modal-date-picker"></div>
+            <div class="modal-content date-picker-content">
+                <div class="picker-header">
+                    <h2 id="date-picker-title">Datum wählen</h2>
+                </div>
+                <div class="wheel-container date-wheels">
+                    <div class="wheel-overlay"></div>
+                    <div class="wheel" id="wheel-days">
+                        <!-- Days 01-31 generated by JS -->
+                    </div>
+                    <div class="wheel" id="wheel-months">
+                        <!-- Months Jan-Dec generated by JS -->
+                    </div>
+                    <div class="wheel" id="wheel-years">
+                        <!-- Years +/- 10 generated by JS -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" data-close="modal-date-picker">Abbrechen</button>
+                    <button class="btn-primary" id="btn-date-set">Fertig</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div id="toast" class="toast hidden"></div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-view="view-entry">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6v6l4 2" />
+                </svg>
+                <span>Erfassen</span>
+            </button>
+            <button class="nav-btn" data-view="view-dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="9" rx="1" />
+                    <rect x="14" y="3" width="7" height="5" rx="1" />
+                    <rect x="3" y="16" width="7" height="5" rx="1" />
+                    <rect x="14" y="12" width="7" height="9" rx="1" />
+                </svg>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-btn" data-view="view-entries">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="1" />
+                    <path d="M9 12h6m-6 4h6" />
+                </svg>
+                <span>Eintr&auml;ge</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+    <script src="excelStyles.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
